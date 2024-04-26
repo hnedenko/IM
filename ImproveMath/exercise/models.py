@@ -1,18 +1,25 @@
 from django.db import models
-import uuid
-from django.utils.translation import gettext_lazy as _
 
 
 class Exercise(models.Model):
-
-    class Difficulty(models.TextChoices):
-        EASY = 'ES', _('Easy')
-        MEDIUM = 'MD', _('Medium')
-        HARD = 'HD', _('Hard')
-        EXTRA = 'EX', _('Extra')
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    difficulty = models.CharField(max_length=2, choices=Difficulty.choices, default=Difficulty.MEDIUM, blank=False)
+    chapter = models.ForeignKey('Chapter', on_delete=models.PROTECT, null=False)
+    difficulty = models.ForeignKey('Difficulty', on_delete=models.PROTECT, null=False)
+    time_create = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='exercise/res')
 
     def __str__(self):
-        return str(self.id) + ' - ' + str(self.difficulty)
+        return str(self.chapter) + ' - ' + str(self.difficulty)
+
+
+class Chapter(models.Model):
+    name = models.CharField(max_length=100, db_index=True)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Difficulty(models.Model):
+    name = models.CharField(max_length=50, db_index=True)
+
+    def __str__(self):
+        return str(self.name)
